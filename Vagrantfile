@@ -6,28 +6,27 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
 
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://atlas.hashicorp.com/search.
+#Guest additions are required for forwarded ports, shared folders, host only
+#        networking, and more.
   config.vm.box = "centos/7"
 
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.define :default do |base|
 
-  # config.vm.network "private_network", ip: "192.168.33.10"
+    base.vm.synced_folder "../ansible", "/vagrant/ansible", type: "rsync"
+    base.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "1024"
+    end
+   
+    base.vm.provision "shell", path: "setup.sh"
+  end
 
-  config.vm.synced_folder "../ansible", "/vagrant/ansible", type: "rsync"
+  config.vm.define :webserver01 do |web|
 
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
-  config.vm.provision "shell", path: "setup.sh"
+    web.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+    end
+  end
 
 end
