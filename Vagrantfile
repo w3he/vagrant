@@ -13,6 +13,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :default do |base|
 
+    base.vm.hostname = "default"
+    base.vm.network :private_network, ip: "10.0.2.20"
     base.vm.synced_folder "../ansible", "/vagrant/ansible", type: "rsync"
     base.vm.provider "virtualbox" do |vb|
       vb.gui = false
@@ -23,10 +25,13 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define :webserver01 do |web|
-
+    #web.vm.box = "ubuntu/trusty64"
+    web.vm.hostname = "websvr01"
+    web.vm.network :private_network, ip: "10.0.2.21"
     web.vm.provider "virtualbox" do |vb|
       vb.memory = "1024"
     end
+    web.vm.provision "shell", path: "setup-web.sh"
   end
 
 end
